@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-dian-50: #E6F1FB;
+  --color-dian-100: #B5D4F4;
+  --color-dian-500: #185FA5;
+  --color-dian-600: #0C447C;
+  --color-dian-900: #042C53;
+  --color-xp-gold: #BA7517;
+  --color-xp-light: #FAEEDA;
+  --color-success: #3B6D11;
+  --color-success-light: #EAF3DE;
+  --color-danger: #791F1F;
+  --color-danger-light: #FCEBEB;
+}
