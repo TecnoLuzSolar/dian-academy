@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import LessonQuiz from "./LessonQuiz";
+import GenerarBoton from "./GenerarBoton";
 
 export default async function ModuloPage({
   params,
@@ -15,7 +16,10 @@ export default async function ModuloPage({
     include: {
       lessons: {
         include: {
-          questions: { include: { options: true } },
+          questions: {
+            where: { status: "PUBLISHED" },
+            include: { options: true },
+          },
         },
         orderBy: { order: "asc" },
       },
@@ -31,6 +35,7 @@ export default async function ModuloPage({
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
+      <GenerarBoton moduleSlug={module.slug} />
       <LessonQuiz
         moduleId={module.id}
         moduleTitle={module.title}

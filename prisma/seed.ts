@@ -94,7 +94,164 @@ async function main() {
     }
     console.log("✅ Lección con 3 preguntas creada.");
   }
+// ─── MÓDULO 4: Derecho Administrativo (CPACA) ───
+  console.log("⚖️ Configurando banco de CPACA...");
+  const da = await prisma.module.findUnique({ where: { slug: "derecho-administrativo" } });
+  if (!da) throw new Error("Módulo Derecho Administrativo no encontrado");
 
+  const cpacaPassage = `El Código de Procedimiento Administrativo y de lo Contencioso Administrativo (CPACA, Ley 1437 de 2011) regula el derecho fundamental de petición, sustituido por la Ley 1755 de 2015.
+
+Las peticiones de interés general o particular se resuelven en quince (15) días hábiles. Las solicitudes de documentos e información tienen un plazo de diez (10) días hábiles; si la autoridad no responde, opera el silencio administrativo positivo y debe entregar las copias en tres (3) días. Las consultas, que piden el concepto de la entidad sobre cómo aplicar una norma, tienen treinta (30) días hábiles.
+
+Cuando la autoridad no resuelve una petición dentro de los tres (3) meses siguientes a su presentación, se configura el silencio administrativo negativo: la petición se entiende negada y el ciudadano queda habilitado para interponer recursos o demandar.
+
+Contra los actos administrativos definitivos proceden tres recursos (Art. 74): reposición, ante el mismo funcionario; apelación, ante el superior jerárquico (obligatoria para acceder a la jurisdicción); y queja, cuando se rechaza la apelación. Los recursos de reposición y apelación se interponen dentro de los diez (10) días siguientes a la notificación.`;
+
+  const cpacaQuestions = [
+    {
+      text: "Un contribuyente presenta una petición de interés particular y la DIAN no responde. ¿Cuándo se configura el silencio administrativo negativo?",
+      explanation: "El silencio negativo opera a los 3 meses (Art. 83). Vencer el plazo de respuesta de 15 días NO es lo mismo que configurarse el silencio: son dos relojes distintos.",
+      options: [
+        { text: "Al vencer los 15 días hábiles de respuesta",          isCorrect: false },
+        { text: "A los 3 meses de presentada la petición",             isCorrect: true  },
+        { text: "A los 10 días hábiles",                               isCorrect: false },
+        { text: "Nunca, la entidad siempre está obligada a responder", isCorrect: false },
+      ],
+    },
+    {
+      text: "Una persona solicita copia de documentos a la DIAN y la entidad no responde en 10 días hábiles. ¿Qué consecuencia se produce?",
+      explanation: "Para documentos e información opera el silencio POSITIVO a los 10 días: la solicitud se entiende aceptada y las copias se entregan en 3 días. Es la excepción pro-transparencia.",
+      options: [
+        { text: "Silencio negativo: se entiende negada y debe demandar",               isCorrect: false },
+        { text: "Silencio positivo: se entiende aceptada y entregan copias en 3 días", isCorrect: true  },
+        { text: "Debe esperar 3 meses para que opere cualquier silencio",              isCorrect: false },
+        { text: "La petición caduca y debe presentarse de nuevo",                      isCorrect: false },
+      ],
+    },
+    {
+      text: "Un usuario pide a la DIAN un concepto sobre cómo aplicar una norma tributaria a su caso particular. ¿Cuál es el plazo para responder?",
+      explanation: "Pedir un concepto sobre CÓMO aplicar una norma es una consulta (30 días hábiles). Distinto a pedir documentos que ya existen (10 días).",
+      options: [
+        { text: "10 días hábiles, por ser solicitud de información", isCorrect: false },
+        { text: "15 días hábiles, por interés particular",          isCorrect: false },
+        { text: "30 días hábiles, por tratarse de una consulta",    isCorrect: true  },
+        { text: "3 meses, antes del silencio negativo",             isCorrect: false },
+      ],
+    },
+    {
+      text: "¿Cuál de los siguientes recursos es OBLIGATORIO interponer para poder acceder luego a la jurisdicción de lo contencioso administrativo?",
+      explanation: "La apelación, cuando procede, es obligatoria para agotar la vía gubernativa y poder demandar. La reposición y la queja son facultativas.",
+      options: [
+        { text: "El recurso de reposición",  isCorrect: false },
+        { text: "El recurso de apelación",   isCorrect: true  },
+        { text: "El recurso de queja",       isCorrect: false },
+        { text: "Ninguno es obligatorio",    isCorrect: false },
+      ],
+    },
+    {
+      text: "El recurso de reposición debe interponerse ante:",
+      explanation: "La reposición va ante el MISMO funcionario que tomó la decisión, dentro de los 10 días siguientes a la notificación. La apelación va ante el superior jerárquico.",
+      options: [
+        { text: "El superior jerárquico del funcionario",    isCorrect: false },
+        { text: "El mismo funcionario que tomó la decisión", isCorrect: true  },
+        { text: "Directamente la jurisdicción contenciosa",  isCorrect: false },
+        { text: "La Procuraduría General de la Nación",      isCorrect: false },
+      ],
+    },
+    {
+      text: "¿Cuál de los siguientes NO es un principio de la función administrativa según el Art. 3 del CPACA?",
+      explanation: "Los principios son: debido proceso, igualdad, imparcialidad, buena fe, moralidad, participación, responsabilidad, transparencia, publicidad, coordinación, eficacia, economía y celeridad. La rentabilidad económica no es uno: la función administrativa no busca lucro.",
+      options: [
+        { text: "Debido proceso",        isCorrect: false },
+        { text: "Buena fe",              isCorrect: false },
+        { text: "Rentabilidad económica", isCorrect: true  },
+        { text: "Celeridad",             isCorrect: false },
+      ],
+    },
+    {
+      text: "Cuando no es posible realizar la notificación personal de un acto administrativo, ¿qué procede según el CPACA?",
+      explanation: "Si no se logra la notificación personal, se realiza la notificación por aviso (Art. 69), remitido a la dirección del interesado con copia del acto.",
+      options: [
+        { text: "La notificación por aviso",                  isCorrect: true  },
+        { text: "El acto se entiende notificado de inmediato", isCorrect: false },
+        { text: "El acto administrativo caduca",              isCorrect: false },
+        { text: "Se archiva la actuación",                    isCorrect: false },
+      ],
+    },
+    {
+      text: "La revocatoria directa de un acto administrativo (Art. 93 CPACA) procede, entre otras causales, cuando:",
+      explanation: "Procede cuando el acto es manifiestamente contrario a la Constitución o la ley, cuando no esté conforme con el interés público o social, o cuando cause agravio injustificado a una persona.",
+      options: [
+        { text: "El acto es manifiestamente contrario a la Constitución o la ley", isCorrect: true  },
+        { text: "Han transcurrido más de cinco años",                              isCorrect: false },
+        { text: "El particular paga una multa",                                    isCorrect: false },
+        { text: "Solo cuando lo ordena un juez",                                   isCorrect: false },
+      ],
+    },
+    {
+      text: "Cuando una autoridad solicita información o documentos a OTRA autoridad, el plazo para responder es de:",
+      explanation: "Las peticiones entre autoridades deben resolverse en 10 días (Ley 1755). Si no es posible, debe informarse y la otra autoridad puede señalar un plazo mayor.",
+      options: [
+        { text: "15 días hábiles", isCorrect: false },
+        { text: "10 días",         isCorrect: true  },
+        { text: "30 días hábiles", isCorrect: false },
+        { text: "5 días",          isCorrect: false },
+      ],
+    },
+    {
+      text: "El recurso de queja procede cuando:",
+      explanation: "La queja es facultativa y procede cuando se RECHAZA el recurso de apelación. Se interpone directamente ante el superior del funcionario que lo negó.",
+      options: [
+        { text: "Se rechaza el recurso de apelación",      isCorrect: true  },
+        { text: "Se niega la petición inicial",            isCorrect: false },
+        { text: "Vence el plazo de respuesta",             isCorrect: false },
+        { text: "Se solicita una revocatoria directa",     isCorrect: false },
+      ],
+    },
+  ];
+
+  // Buscar o crear la lección (sin borrarla, para conservar tu progreso)
+  let daLesson = await prisma.lesson.findFirst({ where: { moduleId: da.id } });
+  if (!daLesson) {
+    daLesson = await prisma.lesson.create({
+      data: {
+        moduleId: da.id,
+        title: "Derecho de petición, silencio y recursos",
+        order: 1,
+        type: "QUIZ",
+        xpReward: 150,
+        content: { passage: cpacaPassage },
+      },
+    });
+  } else {
+    await prisma.lesson.update({
+      where: { id: daLesson.id },
+      data: { content: { passage: cpacaPassage } },
+    });
+  }
+
+  // Refrescar el banco de preguntas (seguro: las preguntas no guardan progreso)
+  const oldQs = await prisma.question.findMany({
+    where: { lessonId: daLesson.id },
+    select: { id: true },
+  });
+  if (oldQs.length > 0) {
+    const ids = oldQs.map((x) => x.id);
+    await prisma.questionOption.deleteMany({ where: { questionId: { in: ids } } });
+    await prisma.question.deleteMany({ where: { id: { in: ids } } });
+  }
+
+  for (const q of cpacaQuestions) {
+    await prisma.question.create({
+      data: {
+        lessonId: daLesson.id,
+        text: q.text,
+        explanation: q.explanation,
+        options: { create: q.options },
+      },
+    });
+  }
+  console.log(`✅ CPACA: banco de ${cpacaQuestions.length} preguntas listo.`);
   console.log("✅ Seed completado.");
 }
 

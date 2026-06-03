@@ -12,35 +12,65 @@ interface Props {
   lessonTitle: string;
   passage: string;
   questions: Question[];
+  questionsPerAttempt?: number;
+}
+
+// Mezcla aleatoria (Fisher-Yates)
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Elige N preguntas al azar del banco y mezcla sus opciones
+function pickQuestions(pool: Question[], n: number): Question[] {
+  const count = Math.min(n, pool.length);
+  return shuffle(pool).slice(0, count).map((q) => ({ ...q, options: shuffle(q.options) }));
 }
 
 export default function LessonQuiz({
-  moduleId, moduleTitle, lessonId, lessonTitle, passage, questions,
+  moduleId, moduleTitle, lessonId, lessonTitle, passage, questions, questionsPerAttempt = 5,
 }: Props) {
   const router = useRouter();
-  const [step, setStep]       = useState(0); // 0 = lectura, 1..N = preguntas, N+1 = resultado
+  const [step, setStep]       = useState(0);
+  const [active, setActive]   = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [correct, setCorrect] = useState(0);
   const [saving, setSaving]   = useState(false);
 
-  const totalSteps = questions.length + 1;
+  const totalSteps = active.length + 1;
+
+  function startQuestions() {
+    setActive(pickQuestions(questions, questionsPerAttempt));
+    setStep(1);
+  }
+
+  function retry() {
+    setStep(0);
+    setActive([]);
+    setAnswers({});
+    setCorrect(0);
+  }
 
   function selectOption(qId: string, optId: string, isCorrect: boolean) {
-    if (answers[qId]) return; // ya respondió
+    if (answers[qId]) return;
     setAnswers((prev) => ({ ...prev, [qId]: optId }));
     if (isCorrect) setCorrect((c) => c + 1);
   }
 
   async function finish() {
     setSaving(true);
-    const score = Math.round((correct / questions.length) * 100);
+    const score = Math.round((correct / active.length) * 100);
     await fetch("/api/progress", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ moduleId, lessonId, score, xpReward: 120 }),
     });
     setSaving(false);
-    setStep(totalSteps); // mostrar resultado
+    setStep(totalSteps);
   }
 
   // ─── PANTALLA DE LECTURA ───
@@ -59,8 +89,14 @@ export default function LessonQuiz({
           ))}
         </div>
 
+        <div className="bg-[#E6F1FB] rounded-xl p-3 mb-4 text-center">
+          <p className="text-xs text-[#0C447C]">
+            🎲 Banco de {questions.length} preguntas · cada intento muestra {Math.min(questionsPerAttempt, questions.length)} distintas
+          </p>
+        </div>
+
         <button
-          onClick={() => setStep(1)}
+          onClick={startQuestions}
           className="w-full bg-[#0C447C] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#185FA5] transition-colors"
         >
           Empezar preguntas →
@@ -71,28 +107,26 @@ export default function LessonQuiz({
 
   // ─── PANTALLA DE RESULTADO ───
   if (step === totalSteps) {
-    const score  = Math.round((correct / questions.length) * 100);
+    const score  = Math.round((correct / active.length) * 100);
     const passed = score >= 70;
     return (
       <div className="text-center py-8">
         <div className="text-5xl mb-3">{passed ? "🎉" : "📚"}</div>
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-          {correct}/{questions.length} correctas ({score}%)
+          {correct}/{active.length} correctas ({score}%)
         </h1>
         <p className="text-sm text-gray-500 mb-6">
           {passed
-            ? "¡Lección completada! Ganaste +120 XP. El siguiente módulo se desbloqueó."
-            : "Necesitas 70% para avanzar. ¡Inténtalo de nuevo!"}
+            ? "¡Lección completada! Ganaste +120 XP."
+            : "Necesitas 70% para avanzar. ¡Inténtalo de nuevo con preguntas nuevas!"}
         </p>
         <div className="flex gap-3 justify-center">
-          {!passed && (
-            <button
-              onClick={() => { setStep(0); setAnswers({}); setCorrect(0); }}
-              className="px-4 py-2 border border-gray-300 rounded-xl text-sm hover:bg-gray-50"
-            >
-              Repetir lección
-            </button>
-          )}
+          <button
+            onClick={retry}
+            className="px-4 py-2 border border-gray-300 rounded-xl text-sm hover:bg-gray-50"
+          >
+            Intentar de nuevo
+          </button>
           <button
             onClick={() => { router.refresh(); router.push("/modulos"); }}
             className="px-4 py-2 bg-[#0C447C] text-white rounded-xl text-sm font-medium hover:bg-[#185FA5]"
@@ -105,7 +139,7 @@ export default function LessonQuiz({
   }
 
   // ─── PANTALLA DE PREGUNTA ───
-  const q        = questions[step - 1];
+  const q        = active[step - 1];
   const answered = !!answers[q.id];
 
   return (
@@ -119,7 +153,7 @@ export default function LessonQuiz({
         ))}
       </div>
 
-      <p className="text-xs text-gray-500 mb-2">Pregunta {step} de {questions.length}</p>
+      <p className="text-xs text-gray-500 mb-2">Pregunta {step} de {active.length}</p>
       <h2 className="text-base font-medium text-gray-900 mb-4 leading-snug">{q.text}</h2>
 
       <div className="space-y-2">
@@ -154,11 +188,11 @@ export default function LessonQuiz({
 
       {answered && (
         <button
-          onClick={() => (step < questions.length ? setStep(step + 1) : finish())}
+          onClick={() => (step < active.length ? setStep(step + 1) : finish())}
           disabled={saving}
           className="w-full mt-4 bg-[#0C447C] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#185FA5] transition-colors disabled:opacity-50"
         >
-          {saving ? "Guardando..." : step < questions.length ? "Siguiente pregunta →" : "Ver resultados →"}
+          {saving ? "Guardando..." : step < active.length ? "Siguiente pregunta →" : "Ver resultados →"}
         </button>
       )}
     </div>
