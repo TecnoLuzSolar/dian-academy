@@ -46,10 +46,12 @@ export default async function ModuloPage({
           id: q.id,
           text: q.text,
           explanation: q.explanation ?? "",
+          type: q.type,
           options: q.options.map((o) => ({
             id: o.id,
             text: o.text,
             isCorrect: o.isCorrect,
+            score: o.score,
           })),
         }))}
       />
