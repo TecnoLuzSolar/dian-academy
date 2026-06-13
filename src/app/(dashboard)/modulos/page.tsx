@@ -23,14 +23,10 @@ export default async function ModulosPage() {
     );
     if (modProgress?.status === "COMPLETED") return "completed";
 
-    // El módulo 1 siempre está activo. Los demás se desbloquean si el anterior está completo.
-    if (order === 1) return "active";
-    const prevCompleted = progress.some(
-      (p) =>
-        modules.find((m) => m.id === p.moduleId)?.order === order - 1 &&
-        p.status === "COMPLETED"
-    );
-    return prevCompleted ? "active" : "locked";
+    // Si tiene contenido (lecciones), está disponible para estudiar
+    const mod = modules.find((m) => m.order === order);
+    const hasContent = (mod?.lessons?.length ?? 0) > 0;
+    return hasContent ? "active" : "locked";
   }
 
   return (

@@ -33,6 +33,10 @@ export default async function ModuloPage({
   const lesson = module.lessons[0];
   const content = lesson.content as { passage?: string } | null;
 
+  // Detectar tipo de pregunta según el módulo
+  const qType = module.slug === "competencias-comportamentales" ? "LIKERT" : "SITUATIONAL";
+
+
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
       <GenerarBoton moduleSlug={module.slug} />
