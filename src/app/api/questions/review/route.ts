@@ -9,6 +9,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
+    if ((session.user as any).role !== "ADMIN") {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+
     const { questionId, action } = await request.json();
 
     if (action === "approve") {

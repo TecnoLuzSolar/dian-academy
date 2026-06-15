@@ -9,7 +9,7 @@ export default async function ModuloPage({
 }: {
   params: { slug: string };
 }) {
-  await getCurrentUser();
+  const user = await getCurrentUser();
 
   const module = await prisma.module.findUnique({
     where: { slug: params.slug },
@@ -39,7 +39,9 @@ export default async function ModuloPage({
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
-      <GenerarBoton moduleSlug={module.slug} />
+      {user.role === "ADMIN" && (
+        <GenerarBoton moduleSlug={module.slug} questionType={module.slug === "competencias-comportamentales" ? "LIKERT" : "SITUATIONAL"} />
+      )}
       <LessonQuiz
         moduleId={module.id}
         moduleTitle={module.title}

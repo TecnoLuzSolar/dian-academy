@@ -1,12 +1,15 @@
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/db";
 import RevisarLista from "./RevisarLista";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function RevisarPage() {
-  await getCurrentUser();
-
+  const user = await getCurrentUser();
+  if (user.role !== "ADMIN") {
+    redirect("/dashboard");
+  }
   const drafts = await prisma.question.findMany({
     where: { status: "DRAFT" },
     include: { options: true, lesson: { include: { module: true } } },
