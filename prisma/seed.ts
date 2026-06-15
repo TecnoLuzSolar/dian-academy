@@ -981,6 +981,181 @@ La protección de datos es crítica: compartir contraseñas, enviar información
     });
   }
   console.log(`✅ Gobierno Digital y Ofimática: ${digitalQuestions.length} preguntas situacionales listas.`);
+
+  // ─── Razonamiento Lógico ─────────────────────────────────────────
+  console.log("🧠 Configurando Razonamiento Lógico...");
+  const rl = await prisma.module.findUnique({ where: { slug: "razonamiento-logico" } });
+  if (rl) {
+    const rlPassage = `El componente de Razonamiento Lógico evalúa la capacidad del aspirante para analizar información, identificar patrones, resolver problemas y llegar a conclusiones válidas. No se basa en conocimientos legales específicos sino en habilidades cognitivas fundamentales para el ejercicio del cargo público.
+
+Las áreas evaluadas incluyen:
+
+SERIES NUMÉRICAS: Identificar el patrón que rige una secuencia de números y determinar el siguiente elemento. Los patrones pueden ser aritméticos (suma/resta constante), geométricos (multiplicación/división constante), mixtos (combinación de operaciones), o alternos (dos patrones intercalados).
+
+ANALOGÍAS: Identificar la relación que existe entre un par de conceptos y aplicar esa misma relación a otro par. Ejemplo: Médico es a Hospital como Profesor es a Escuela (relación: profesional - lugar de trabajo).
+
+SILOGISMOS: Evaluar la validez de conclusiones a partir de premisas dadas. Un silogismo válido tiene dos premisas y una conclusión que se deriva lógicamente de ellas. Ejemplo: Premisa 1: Todos los servidores públicos deben cumplir la ley. Premisa 2: Juan es servidor público. Conclusión válida: Juan debe cumplir la ley.
+
+INTERPRETACIÓN DE TABLAS Y GRÁFICOS: Leer, analizar y extraer conclusiones de información presentada en tablas, gráficos de barras, gráficos circulares o diagramas. Se evalúa la capacidad de comparar datos, calcular porcentajes y identificar tendencias.
+
+LÓGICA PROPOSICIONAL: Evaluar el valor de verdad de proposiciones compuestas usando conectores lógicos: Y (conjunción, ambas deben ser verdaderas), O (disyunción, al menos una verdadera), NO (negación), SI...ENTONCES (condicional, solo es falso cuando el antecedente es verdadero y el consecuente falso).
+
+ORDENAMIENTO Y ORGANIZACIÓN: Determinar posiciones, secuencias o clasificaciones a partir de un conjunto de condiciones o restricciones dadas.`;
+
+    let rlLesson = await prisma.lesson.findFirst({ where: { moduleId: rl.id } });
+    if (!rlLesson) {
+      rlLesson = await prisma.lesson.create({
+        data: { moduleId: rl.id, title: "Series, analogías, silogismos y lógica", order: 1, type: "QUIZ", xpReward: 150, content: { passage: rlPassage } },
+      });
+    } else {
+      await prisma.lesson.update({ where: { id: rlLesson.id }, data: { content: { passage: rlPassage } } });
+    }
+
+    const rlQuestions = [
+      {
+        text: "¿Cuál es el siguiente número en la serie: 2, 6, 18, 54, ...?",
+        explanation: "Es una serie geométrica donde cada término se multiplica por 3: 2×3=6, 6×3=18, 18×3=54, 54×3=162.",
+        options: [
+          { text: "162", isCorrect: true },
+          { text: "108", isCorrect: false },
+          { text: "72", isCorrect: false },
+          { text: "148", isCorrect: false },
+        ],
+      },
+      {
+        text: "¿Cuál es el siguiente número en la serie: 3, 7, 15, 31, ...?",
+        explanation: "Cada término se obtiene multiplicando el anterior por 2 y sumando 1: 3×2+1=7, 7×2+1=15, 15×2+1=31, 31×2+1=63.",
+        options: [
+          { text: "63", isCorrect: true },
+          { text: "62", isCorrect: false },
+          { text: "47", isCorrect: false },
+          { text: "59", isCorrect: false },
+        ],
+      },
+      {
+        text: "Complete la analogía: Médico es a Hospital como Juez es a ___",
+        explanation: "La relación es profesional → lugar donde ejerce. El médico ejerce en el hospital; el juez ejerce en el juzgado (o tribunal).",
+        options: [
+          { text: "Juzgado", isCorrect: true },
+          { text: "Cárcel", isCorrect: false },
+          { text: "Fiscalía", isCorrect: false },
+          { text: "Abogado", isCorrect: false },
+        ],
+      },
+      {
+        text: "Complete la analogía: Impuesto es a DIAN como Delito es a ___",
+        explanation: "La relación es materia → entidad competente. La DIAN administra los impuestos; la Fiscalía investiga los delitos.",
+        options: [
+          { text: "Fiscalía", isCorrect: true },
+          { text: "Procuraduría", isCorrect: false },
+          { text: "Contraloría", isCorrect: false },
+          { text: "Defensoría", isCorrect: false },
+        ],
+      },
+      {
+        text: "Premisa 1: Todos los funcionarios de la DIAN deben conocer el Estatuto Tributario. Premisa 2: Ana es funcionaria de la DIAN. ¿Qué conclusión es lógicamente válida?",
+        explanation: "Si todos los funcionarios DIAN deben conocer el E.T. (premisa universal) y Ana es funcionaria DIAN (premisa particular), entonces Ana debe conocer el E.T. (conclusión válida por silogismo categórico).",
+        options: [
+          { text: "Ana debe conocer el Estatuto Tributario", isCorrect: true },
+          { text: "Ana es experta en el Estatuto Tributario", isCorrect: false },
+          { text: "Todos los que conocen el Estatuto Tributario trabajan en la DIAN", isCorrect: false },
+          { text: "Ana escogió trabajar en la DIAN porque conoce el Estatuto Tributario", isCorrect: false },
+        ],
+      },
+      {
+        text: "Premisa 1: Ningún documento reservado puede ser divulgado al público. Premisa 2: Las declaraciones de renta son documentos reservados. ¿Qué conclusión es válida?",
+        explanation: "Si ningún documento reservado puede divulgarse (universal negativa) y las declaraciones son reservadas, entonces las declaraciones no pueden divulgarse. Es un silogismo válido en modo Celarent.",
+        options: [
+          { text: "Las declaraciones de renta no pueden ser divulgadas al público", isCorrect: true },
+          { text: "Solo la DIAN puede ver las declaraciones de renta", isCorrect: false },
+          { text: "Los documentos públicos incluyen las declaraciones de renta", isCorrect: false },
+          { text: "Todos los documentos reservados son declaraciones de renta", isCorrect: false },
+        ],
+      },
+      {
+        text: "Si la proposición 'Si llueve, entonces llevo paraguas' es VERDADERA, ¿cuál de las siguientes situaciones la hace FALSA?",
+        explanation: "Un condicional (SI...ENTONCES) solo es FALSO cuando el antecedente es verdadero y el consecuente es falso. Es decir: llueve (verdadero) Y no llevo paraguas (falso) = la proposición es falsa.",
+        options: [
+          { text: "Llueve y NO llevo paraguas", isCorrect: true },
+          { text: "No llueve y no llevo paraguas", isCorrect: false },
+          { text: "No llueve y llevo paraguas", isCorrect: false },
+          { text: "Llueve y llevo paraguas", isCorrect: false },
+        ],
+      },
+      {
+        text: "¿Cuál es el siguiente número en la serie: 1, 1, 2, 3, 5, 8, 13, ...?",
+        explanation: "Es la serie de Fibonacci: cada término es la suma de los dos anteriores. 5+8=13, 8+13=21.",
+        options: [
+          { text: "21", isCorrect: true },
+          { text: "18", isCorrect: false },
+          { text: "20", isCorrect: false },
+          { text: "26", isCorrect: false },
+        ],
+      },
+      {
+        text: "En una oficina de la DIAN hay 5 funcionarios: Ana, Bernardo, Carla, Diego y Elena. Ana se sienta a la izquierda de Bernardo. Carla se sienta entre Diego y Elena. Diego no se sienta en los extremos. ¿Quién se sienta en el extremo derecho?",
+        explanation: "Diego no está en los extremos y Carla está entre Diego y Elena. Si Diego está en posición 2, 3 o 4, y Carla está entre Diego y Elena, probando las combinaciones: Ana-Bernardo pueden estar juntos (Ana a la izquierda). Una solución válida: Ana, Bernardo, Diego, Carla, Elena. Elena está en el extremo derecho.",
+        options: [
+          { text: "Elena", isCorrect: true },
+          { text: "Carla", isCorrect: false },
+          { text: "Diego", isCorrect: false },
+          { text: "Bernardo", isCorrect: false },
+        ],
+      },
+      {
+        text: "Si 'Todos los contribuyentes deben declarar renta' es VERDADERO, ¿cuál de las siguientes afirmaciones es necesariamente VERDADERA?",
+        explanation: "Si TODOS los contribuyentes deben declarar, y Pedro es contribuyente, entonces Pedro debe declarar. Las otras opciones no se derivan lógicamente: no sabemos si los no contribuyentes declaran, ni si declarar te hace contribuyente.",
+        options: [
+          { text: "Si Pedro es contribuyente, entonces Pedro debe declarar renta", isCorrect: true },
+          { text: "Si Pedro declara renta, entonces Pedro es contribuyente", isCorrect: false },
+          { text: "Si Pedro no es contribuyente, entonces no debe declarar renta", isCorrect: false },
+          { text: "Todos los que declaran renta son contribuyentes", isCorrect: false },
+        ],
+      },
+    ];
+
+    const oldRlQs = await prisma.question.findMany({ where: { lessonId: rlLesson.id }, select: { id: true } });
+    if (oldRlQs.length > 0) {
+      const ids = oldRlQs.map((x) => x.id);
+      await prisma.questionOption.deleteMany({ where: { questionId: { in: ids } } });
+      await prisma.question.deleteMany({ where: { id: { in: ids } } });
+    }
+
+    for (const q of rlQuestions) {
+      await prisma.question.create({
+        data: {
+          lessonId: rlLesson.id, text: q.text, explanation: q.explanation,
+          type: "SITUATIONAL", status: "PUBLISHED", source: "manual",
+          options: { create: q.options.map((o) => ({ text: o.text, isCorrect: o.isCorrect, score: 0 })) },
+        },
+      });
+    }
+    console.log(`✅ Razonamiento Lógico: ${rlQuestions.length} preguntas listas.`);
+  }
+  // ─── Logros (Achievements) ────────────────────────────────────────
+  console.log("🏅 Configurando logros...");
+  const achievements = [
+    { key: "first_quiz",     name: "Primera leccion",     description: "Completaste tu primera leccion",           icon: "🎯", xpReward: 50,  conditionType: "MODULES_COMPLETED" as const, conditionValue: 0 },
+    { key: "module_1",       name: "Primer modulo",       description: "Completaste un modulo completo",           icon: "📗", xpReward: 100, conditionType: "MODULES_COMPLETED" as const, conditionValue: 1 },
+    { key: "module_3",       name: "Triple corona",       description: "Completaste 3 modulos",                    icon: "👑", xpReward: 200, conditionType: "MODULES_COMPLETED" as const, conditionValue: 3 },
+    { key: "module_5",       name: "Medio camino",        description: "Completaste 5 modulos",                    icon: "🏔️", xpReward: 300, conditionType: "MODULES_COMPLETED" as const, conditionValue: 5 },
+    { key: "module_10",      name: "Conquistador DIAN",   description: "Completaste los 10 modulos",               icon: "🏆", xpReward: 500, conditionType: "MODULES_COMPLETED" as const, conditionValue: 10 },
+    { key: "perfect_score",  name: "Perfeccion",          description: "Obtuviste 100% en una leccion",            icon: "💎", xpReward: 150, conditionType: "PERFECT_SCORE" as const,     conditionValue: 100 },
+    { key: "streak_3",       name: "Racha de 3",          description: "Estudiaste 3 dias seguidos",               icon: "🔥", xpReward: 100, conditionType: "STREAK" as const,            conditionValue: 3 },
+    { key: "streak_7",       name: "Semana imparable",    description: "Estudiaste 7 dias seguidos",               icon: "⚡", xpReward: 250, conditionType: "STREAK" as const,            conditionValue: 7 },
+    { key: "xp_500",         name: "Aspirante dedicado",  description: "Acumulaste 500 XP",                        icon: "⭐", xpReward: 100, conditionType: "XP_TOTAL" as const,          conditionValue: 500 },
+    { key: "xp_2000",        name: "Analista en formacion", description: "Acumulaste 2000 XP",                     icon: "🌟", xpReward: 300, conditionType: "XP_TOTAL" as const,          conditionValue: 2000 },
+    { key: "xp_5000",        name: "Listo para el examen", description: "Acumulaste 5000 XP",                      icon: "🎓", xpReward: 500, conditionType: "XP_TOTAL" as const,          conditionValue: 5000 },
+  ];
+
+  for (const a of achievements) {
+    await prisma.achievement.upsert({
+      where: { key: a.key },
+      update: {},
+      create: a,
+    });
+  }
+  console.log(`✅ ${achievements.length} logros configurados.`);
   console.log("✅ Seed completado.");
 }
 
