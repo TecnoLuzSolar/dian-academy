@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/db";
+import { getCargoModules } from "@/lib/cargos";
 
 export const dynamic = "force-dynamic";
 
 export default async function ModulosPage() {
   const user = await getCurrentUser();
 
+  const allowedSlugs = getCargoModules(user.cargo);  
   const modules = await prisma.module.findMany({
     orderBy: { order: "asc" },
     include: { lessons: true },
@@ -37,7 +39,7 @@ export default async function ModulosPage() {
       </p>
 
       <div className="space-y-2">
-        {modules.map((mod) => {
+        {modules.filter((mod) => allowedSlugs.includes(mod.slug)).map((mod) => {
           const status = getStatus(mod.order);
           const hasLessons = mod.lessons.length > 0;
           const isClickable = status !== "locked" && hasLessons;

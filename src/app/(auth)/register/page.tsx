@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { CARGOS } from "@/lib/cargos";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function RegisterPage() {
         name:     form.get("name"),
         email:    form.get("email"),
         password: form.get("password"),
+        cargo:    form.get("cargo"),
       }),
     });
 
@@ -93,6 +95,22 @@ export default function RegisterPage() {
             {error}
           </p>
         )}
+        
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1.5">
+            Cargo al que aspiras
+          </label>
+          <select
+            name="cargo"
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0C447C] bg-white"
+          >
+            {CARGOS.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <button
           type="submit"
