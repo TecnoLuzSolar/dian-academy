@@ -79,7 +79,7 @@ export default async function ModulosPage() {
               </div>
               {status === "active" && hasLessons && (
                 <span className="text-xs bg-[#0C447C] text-white px-3 py-1.5 rounded-lg font-medium">
-                  {status === "completed" ? "Repasar" : "Empezar"}
+                  Empezar
                 </span>
               )}
             </div>
