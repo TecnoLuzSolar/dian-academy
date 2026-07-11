@@ -36,7 +36,7 @@ export default function LoginPage() {
         <div className="w-12 h-12 bg-[#0C447C] rounded-xl flex items-center justify-center mx-auto mb-4">
           <span className="text-white font-bold text-xl">D</span>
         </div>
-        <h1 className="text-2xl font-semibold text-gray-900">DIAN Academy</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">DIGNUS</h1>
         <p className="text-gray-500 text-sm mt-1">Inicia sesión para continuar</p>
       </div>
 

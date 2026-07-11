@@ -29,7 +29,7 @@ export default async function HomePage() {
             <div className="w-8 h-8 bg-[#0C447C] rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">D</span>
             </div>
-            <span className="font-semibold text-gray-900">DIAN Academy</span>
+            <span className="font-semibold text-gray-900">DIGNUS</span>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">
@@ -84,7 +84,7 @@ export default async function HomePage() {
       </section>
 
       <section className="max-w-5xl mx-auto px-6 py-16">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Por que DIAN Academy?</h2>
+        <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Por que DIGNUS?</h2>
         <div className="grid md:grid-cols-3 gap-6">
           <div className="bg-white border border-gray-200 rounded-xl p-6">
             <h3 className="font-semibold text-gray-900 mb-2">Preguntas situacionales</h3>
@@ -129,7 +129,7 @@ export default async function HomePage() {
       <footer className="border-t border-gray-100">
         <div className="max-w-5xl mx-auto px-6 py-6 text-center">
           <p className="text-xs text-gray-400">
-            DIAN Academy - Plataforma independiente de preparacion. No es un producto oficial de la DIAN ni de la CNSC.
+            DIGNUS - Plataforma independiente de preparacion. No es un producto oficial de la DIAN ni de la CNSC.
           </p>
         </div>
       </footer>

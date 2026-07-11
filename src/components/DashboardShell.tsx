@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -16,10 +17,12 @@ const navItems: NavItem[] = [
 export default function DashboardShell({
   userName,
   userLevel,
+  daysLeft,
   children,
 }: {
   userName: string;
   userLevel: number;
+  daysLeft: number;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -32,10 +35,14 @@ export default function DashboardShell({
       {/* Topbar móvil: solo visible en pantallas pequeñas */}
       <header className="md:hidden fixed top-0 inset-x-0 z-30 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[#0C447C] rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">D</span>
-          </div>
-          <span className="font-semibold text-gray-900 text-sm">DIAN Academy</span>
+          <Image
+            src="/icon-192.png"
+            alt="DIGNUS"
+            width={32}
+            height={32}
+            className="rounded-lg"
+          />
+          <span className="font-semibold text-gray-900 text-sm">DIGNUS</span>
         </div>
         <button
           onClick={() => setOpen((v) => !v)}
@@ -81,10 +88,17 @@ export default function DashboardShell({
         {/* Logo + usuario */}
         <div className="p-4 border-b border-gray-100">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-[#0C447C] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">D</span>
+            <Image
+              src="/icon-192.png"
+              alt="DIGNUS"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
+            <div className="min-w-0">
+              <span className="font-semibold text-gray-900 text-sm block leading-tight">DIGNUS</span>
+              <span className="text-[10px] text-gray-400 leading-tight">Concursos CNSC</span>
             </div>
-            <span className="font-semibold text-gray-900 text-sm">DIAN Academy</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 bg-[#E6F1FB] rounded-full flex items-center justify-center text-[#0C447C] font-medium text-sm">
@@ -133,7 +147,36 @@ export default function DashboardShell({
       </aside>
 
       {/* Contenido principal */}
-      <main className="flex-1 overflow-y-auto pt-14 md:pt-0">{children}</main>
+      <main className="flex-1 overflow-y-auto pt-14 md:pt-0">
+        {/* Aviso de prueba gratis */}
+        <div
+          className={`flex items-center justify-between gap-3 px-4 py-2.5 text-sm ${
+            daysLeft <= 2
+              ? "bg-amber-50 text-amber-800 border-b border-amber-200"
+              : "bg-[#E6F1FB] text-[#0C447C] border-b border-[#C9E0F5]"
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <span>🎁</span>
+            <span>
+              {daysLeft <= 2
+                ? `Tu prueba gratis termina ${daysLeft <= 1 ? "hoy" : `en ${daysLeft} días`}.`
+                : `Prueba gratis: te quedan ${daysLeft} días.`}
+            </span>
+          </span>
+          <Link
+            href="/suscripcion"
+            className={`shrink-0 font-medium px-3 py-1 rounded-lg transition-colors ${
+              daysLeft <= 2
+                ? "bg-amber-600 text-white hover:bg-amber-700"
+                : "bg-[#0C447C] text-white hover:bg-[#185FA5]"
+            }`}
+          >
+            Activar acceso
+          </Link>
+        </div>
+        {children}
+      </main>
     </div>
   );
 }

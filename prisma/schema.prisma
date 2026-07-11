@@ -67,6 +67,7 @@ model User {
   passwordHash String
   role         Role     @default(STUDENT)
   cargo        String   @default("analista-1")
+  accessUntil  DateTime?
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
   createdAt    DateTime @default(now())

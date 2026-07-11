@@ -26,9 +26,9 @@ export async function POST(request: Request) {
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     await resend.emails.send({
-      from: "DIAN Academy <onboarding@resend.dev>",
+      from: "DIGNUS <onboarding@resend.dev>",
       to: email,
-      subject: "Recupera tu contrasena - DIAN Academy",
+      subject: "Recupera tu contrasena - DIGNUS",
       html: `
         <h2>Recuperar contrasena</h2>
         <p>Hola ${user.name},</p>
