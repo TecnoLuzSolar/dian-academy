@@ -44,7 +44,7 @@ export default async function HomePage() {
 
       <section className="max-w-5xl mx-auto px-6 py-16 text-center">
         <div className="inline-block bg-[#E6F1FB] text-[#0C447C] text-xs font-medium px-3 py-1 rounded-full mb-4">
-          Concurso DIAN 2676 - Analista I
+          Concurso DIAN 2676 
         </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
           Prepárate para el concurso de méritos de la DIAN con IA
@@ -68,7 +68,7 @@ export default async function HomePage() {
       <section className="bg-gray-50 border-y border-gray-100">
         <div className="max-w-5xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div>
-            <p className="text-3xl font-bold text-[#0C447C]">290+</p>
+            <p className="text-3xl font-bold text-[#0C447C]">400+</p>
             <p className="text-sm text-gray-500">Preguntas tipo CNSC</p>
           </div>
           <div>
