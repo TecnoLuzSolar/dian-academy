@@ -36,11 +36,11 @@ export default function DashboardShell({
       <header className="md:hidden fixed top-0 inset-x-0 z-30 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <Image
-            src="/icon-192.png"
+            src="/icon-mark.png"
             alt="DIGNUS"
-            width={40}
-            height={40}
-            className="rounded-lg"
+            width={44}
+            height={44}
+            className="rounded-full"
           />
           <span className="font-semibold text-gray-900 text-sm">DIGNUS</span>
         </div>
@@ -89,11 +89,11 @@ export default function DashboardShell({
         <div className="p-4 border-b border-gray-100">
           <div className="flex items-center gap-2 mb-4">
             <Image
-              src="/icon-192.png"
+              src="/icon-mark.png"
               alt="DIGNUS"
-              width={40}
-              height={40}
-              className="rounded-lg"
+              width={44}
+              height={44}
+              className="rounded-full"
             />
             <div className="min-w-0">
               <span className="font-semibold text-gray-900 text-sm block leading-tight">DIGNUS</span>
