@@ -148,7 +148,8 @@ export default function DashboardShell({
 
       {/* Contenido principal */}
       <main className="flex-1 overflow-y-auto pt-14 md:pt-0">
-        {/* Aviso de prueba gratis */}
+        {/* Aviso de prueba gratis: solo visible si el acceso vence pronto (oculta admins/pagos) */}
+        {daysLeft <= 30 && (
         <div
           className={`flex items-center justify-between gap-3 px-4 py-2.5 text-sm ${
             daysLeft <= 2
@@ -175,6 +176,7 @@ export default function DashboardShell({
             Activar acceso
           </Link>
         </div>
+        )}
         {children}
       </main>
     </div>
