@@ -13,7 +13,7 @@ export default async function SuscripcionPage() {
       <div className="w-full max-w-md bg-white rounded-2xl border border-gray-100 p-8">
         {/* Logo */}
         <div className="text-center mb-6">
-          <img src="/icon-192.png" alt="DIGNUS" className="w-14 h-14 mx-auto mb-3" />
+          <img src="/icon-192.png" alt="DIGNUS" className="w-24 h-24 mx-auto mb-3" />
           <h1 className="text-2xl font-semibold text-gray-900">
             {stillActive ? "Activa tu acceso completo" : "Tu prueba gratis terminó"}
           </h1>

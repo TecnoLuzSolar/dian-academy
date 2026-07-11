@@ -33,9 +33,11 @@ export default function LoginPage() {
     <div className="w-full max-w-md p-8 bg-white rounded-2xl border border-gray-100">
       {/* Logo */}
       <div className="mb-8 text-center">
-        <div className="w-12 h-12 bg-[#0C447C] rounded-xl flex items-center justify-center mx-auto mb-4">
-          <span className="text-white font-bold text-xl">D</span>
-        </div>
+        <img
+          src="/icon-192.png"
+          alt="DIGNUS"
+          className="w-20 h-20 mx-auto mb-4"
+        />
         <h1 className="text-2xl font-semibold text-gray-900">DIGNUS</h1>
         <p className="text-gray-500 text-sm mt-1">Inicia sesión para continuar</p>
       </div>
@@ -95,6 +97,13 @@ export default function LoginPage() {
           Regístrate aquí
         </Link>
       </p>
+
+      <Link
+        href="/"
+        className="block text-center text-sm text-gray-400 hover:text-gray-600 mt-6"
+      >
+        ← Volver a la página principal
+      </Link>
     </div>
   );
 }

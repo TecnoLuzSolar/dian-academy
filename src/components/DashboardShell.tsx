@@ -38,8 +38,8 @@ export default function DashboardShell({
           <Image
             src="/icon-192.png"
             alt="DIGNUS"
-            width={32}
-            height={32}
+            width={40}
+            height={40}
             className="rounded-lg"
           />
           <span className="font-semibold text-gray-900 text-sm">DIGNUS</span>
@@ -91,8 +91,8 @@ export default function DashboardShell({
             <Image
               src="/icon-192.png"
               alt="DIGNUS"
-              width={32}
-              height={32}
+              width={40}
+              height={40}
               className="rounded-lg"
             />
             <div className="min-w-0">
@@ -101,7 +101,7 @@ export default function DashboardShell({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-[#E6F1FB] rounded-full flex items-center justify-center text-[#0C447C] font-medium text-sm">
+            <div className="w-11 h-11 bg-[#E6F1FB] rounded-full flex items-center justify-center text-[#0C447C] font-semibold text-base">
               {userName.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">

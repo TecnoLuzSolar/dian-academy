@@ -41,9 +41,11 @@ export default function RegisterPage() {
     <div className="w-full max-w-md p-8 bg-white rounded-2xl border border-gray-100">
       {/* Logo */}
       <div className="mb-8 text-center">
-        <div className="w-12 h-12 bg-[#0C447C] rounded-xl flex items-center justify-center mx-auto mb-4">
-          <span className="text-white font-bold text-xl">D</span>
-        </div>
+        <img
+          src="/icon-192.png"
+          alt="DIGNUS"
+          className="w-20 h-20 mx-auto mb-4"
+        />
         <h1 className="text-2xl font-semibold text-gray-900">DIGNUS</h1>
         <p className="text-gray-500 text-sm mt-1">Crea tu cuenta gratuita</p>
       </div>
@@ -90,12 +92,6 @@ export default function RegisterPage() {
           />
         </div>
 
-        {error && (
-          <p className="text-sm text-red-600 bg-red-50 px-4 py-2.5 rounded-xl">
-            {error}
-          </p>
-        )}
-        
         <div>
           <label className="text-sm font-medium text-gray-700 block mb-1.5">
             Cargo al que aspiras
@@ -112,6 +108,12 @@ export default function RegisterPage() {
           </select>
         </div>
 
+        {error && (
+          <p className="text-sm text-red-600 bg-red-50 px-4 py-2.5 rounded-xl">
+            {error}
+          </p>
+        )}
+
         <button
           type="submit"
           disabled={loading}
@@ -127,6 +129,13 @@ export default function RegisterPage() {
           Inicia sesión
         </Link>
       </p>
+
+      <Link
+        href="/"
+        className="block text-center text-sm text-gray-400 hover:text-gray-600 mt-6"
+      >
+        ← Volver a la página principal
+      </Link>
     </div>
   );
 }
