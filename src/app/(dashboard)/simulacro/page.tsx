@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/db";
-import { getCargoModules } from "@/lib/cargos";
+import { getCargoModules, getCargoName } from "@/lib/cargos";
 import SimulacroQuiz from "./SimulacroQuiz";
 
 export const dynamic = "force-dynamic";
@@ -51,6 +51,7 @@ export default async function SimulacroPage() {
         questions={shuffled}
         userId={user.id}
         userName={user.name}
+        cargoName={getCargoName(user.cargo)}
       />
     </div>
   );

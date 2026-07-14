@@ -53,7 +53,7 @@ export default async function ModulosPage() {
       )}
 
       <div className="space-y-2">
-        {visibleModules.map((mod) => {
+        {visibleModules.map((mod, i) => {
           const status = getStatus(mod.order);
           const hasLessons = mod.lessons.length > 0;
           const isClickable = status !== "locked" && hasLessons;
@@ -77,7 +77,7 @@ export default async function ModulosPage() {
                     : "bg-gray-100 text-gray-400"
                 }`}
               >
-                {status === "completed" ? "✓" : status === "locked" ? "🔒" : mod.order}
+                {status === "completed" ? "✓" : status === "locked" ? "🔒" : i + 1}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900">{mod.title}</p>

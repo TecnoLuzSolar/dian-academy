@@ -5,7 +5,17 @@ import { useRouter } from "next/navigation";
 interface Option { id: string; text: string; isCorrect: boolean; }
 interface Question { id: string; text: string; explanation: string; moduleName: string; options: Option[]; }
 
-export default function SimulacroQuiz({ questions, userId, userName }: { questions: Question[]; userId: string; userName: string }) {
+export default function SimulacroQuiz({
+  questions,
+  userId,
+  userName,
+  cargoName,
+}: {
+  questions: Question[];
+  userId: string;
+  userName: string;
+  cargoName: string;
+}) {
   const router = useRouter();
   const [started, setStarted] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -13,6 +23,9 @@ export default function SimulacroQuiz({ questions, userId, userName }: { questio
   const [correct, setCorrect] = useState(0);
   const [finished, setFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(45 * 60);
+
+  const total = questions.length;
+  const passCount = Math.ceil(total * 0.7);
 
   useEffect(() => {
     if (!started || finished) return;
@@ -50,17 +63,15 @@ export default function SimulacroQuiz({ questions, userId, userName }: { questio
   if (!started) {
     return (
       <div className="text-center py-8">
-        <div className="w-16 h-16 bg-[#0C447C] rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <span className="text-white text-2xl font-bold">S</span>
-        </div>
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">Simulacro DIAN</h1>
-        <p className="text-sm text-gray-500 mb-6">Prueba tipo CNSC — Concurso 2676 Analista I</p>
+        <img src="/icon-mark.png" alt="DIGNUS" className="w-16 h-16 mx-auto mb-4" />
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">Simulacro CNSC</h1>
+        <p className="text-sm text-gray-500 mb-6">Prueba tipo CNSC — {cargoName}</p>
         <div className="bg-white border border-gray-200 rounded-xl p-5 mb-6 text-left max-w-md mx-auto">
           <div className="space-y-2 text-sm text-gray-600">
-            <p><span className="font-medium text-gray-900">Preguntas:</span> 25 (aleatorias de todos los modulos)</p>
+            <p><span className="font-medium text-gray-900">Preguntas:</span> {total} (aleatorias de los módulos de tu perfil)</p>
             <p><span className="font-medium text-gray-900">Tiempo:</span> 45 minutos</p>
-            <p><span className="font-medium text-gray-900">Aprobacion:</span> 70% (18/25 correctas)</p>
-            <p><span className="font-medium text-gray-900">Contenido:</span> Funcionales + Integridad + Constitucion</p>
+            <p><span className="font-medium text-gray-900">Aprobación:</span> 70% ({passCount}/{total} correctas)</p>
+            <p><span className="font-medium text-gray-900">Contenido:</span> Los módulos de tu ruta de aprendizaje</p>
           </div>
         </div>
         <button
@@ -75,7 +86,7 @@ export default function SimulacroQuiz({ questions, userId, userName }: { questio
 
   // ─── PANTALLA RESULTADOS ───
   if (finished) {
-    const score = Math.round((correct / questions.length) * 100);
+    const score = Math.round((correct / total) * 100);
     const passed = score >= 70;
     const breakdown = getModuleBreakdown();
     const timeUsed = 45 * 60 - timeLeft;
@@ -86,16 +97,16 @@ export default function SimulacroQuiz({ questions, userId, userName }: { questio
         <div className="text-center mb-6">
           <div className="text-5xl mb-3">{passed ? "🏆" : "📚"}</div>
           <h1 className="text-2xl font-semibold text-gray-900 mb-1">
-            {correct}/{questions.length} correctas — {score}%
+            {correct}/{total} correctas — {score}%
           </h1>
           <p className="text-sm text-gray-500">
-            {passed ? "Aprobado — excelente preparacion!" : "No alcanzaste el 70%. Sigue practicando."} 
+            {passed ? "¡Aprobado — excelente preparación!" : "No alcanzaste el 70%. Sigue practicando."}
             {" "}Tiempo: {minsUsed} min
           </p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">Resultado por modulo</h3>
+          <h3 className="text-sm font-medium text-gray-900 mb-3">Resultado por módulo</h3>
           <div className="space-y-2">
             {Object.entries(breakdown).map(([mod, data]) => {
               const pct = Math.round((data.correct / data.total) * 100);
@@ -144,7 +155,7 @@ export default function SimulacroQuiz({ questions, userId, userName }: { questio
     <div>
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs text-gray-500">
-          Pregunta {current + 1} de {questions.length} — {answeredCount} respondidas
+          Pregunta {current + 1} de {total} — {answeredCount} respondidas
         </span>
         <span className={`text-xs font-mono font-bold px-2 py-1 rounded ${timeLeft < 300 ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}>
           {mins}:{secs.toString().padStart(2, "0")}
@@ -152,7 +163,7 @@ export default function SimulacroQuiz({ questions, userId, userName }: { questio
       </div>
 
       <div className="w-full bg-gray-100 rounded-full h-1.5 mb-4">
-        <div className="bg-[#0C447C] h-1.5 rounded-full" style={{ width: `${((current + 1) / questions.length) * 100}%` }} />
+        <div className="bg-[#0C447C] h-1.5 rounded-full" style={{ width: `${((current + 1) / total) * 100}%` }} />
       </div>
 
       <p className="text-xs text-[#0C447C] bg-[#E6F1FB] px-2 py-1 rounded inline-block mb-3">{q.moduleName}</p>
@@ -188,10 +199,10 @@ export default function SimulacroQuiz({ questions, userId, userName }: { questio
 
       {answered && (
         <button
-          onClick={() => current < questions.length - 1 ? setCurrent(current + 1) : endExam()}
+          onClick={() => current < total - 1 ? setCurrent(current + 1) : endExam()}
           className="w-full mt-4 bg-[#0C447C] text-white py-2.5 rounded-xl text-sm font-medium hover:bg-[#185FA5]"
         >
-          {current < questions.length - 1 ? "Siguiente" : "Finalizar simulacro"}
+          {current < total - 1 ? "Siguiente" : "Finalizar simulacro"}
         </button>
       )}
     </div>
