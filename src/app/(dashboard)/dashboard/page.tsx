@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/db";
+import { getCargoModules, getCargoName } from "@/lib/cargos";
 
 export const dynamic = "force-dynamic";
 
@@ -7,13 +8,17 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   const stats = user.stats;
 
-  // Datos de la base de datos
+  // Módulos filtrados según el cargo del usuario
+  const allowedSlugs = getCargoModules(user.cargo);
   const modules = await prisma.module.findMany({
+    where: { slug: { in: allowedSlugs } },
     orderBy: { order: "asc" },
   });
   const completedCount = await prisma.userProgress.count({
     where: { userId: user.id, status: "COMPLETED" },
   });
+
+  const cargoName = getCargoName(user.cargo);
 
   // Cálculo de XP para la barra
   const xpCurrent = stats?.xpTotal ?? 0;
@@ -34,7 +39,7 @@ export default async function DashboardPage() {
         ¡Hola, {user.name.split(" ")[0]}! 👋
       </h1>
       <p className="text-sm text-gray-500 mb-6">
-        Meta: primeros 4 puestos en el concurso DIAN 2676
+        Meta: conseguir tu plaza — {cargoName}
       </p>
 
       {/* Barra de XP */}
@@ -44,7 +49,7 @@ export default async function DashboardPage() {
             <span className="bg-[#0C447C] text-white text-xs font-bold px-2 py-0.5 rounded-full">
               Nivel {stats?.level ?? 1}
             </span>
-            <span className="text-sm font-medium text-gray-900">Analista Aspirante</span>
+            <span className="text-sm font-medium text-gray-900">Aspirante</span>
           </div>
           <span className="text-xs text-gray-500">{xpCurrent} / {xpForNext} XP</span>
         </div>
@@ -88,13 +93,13 @@ export default async function DashboardPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          {modules.map((mod) => (
+          {modules.map((mod, i) => (
             <div
               key={mod.id}
               className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 bg-white"
             >
               <div className="w-9 h-9 rounded-full bg-[#E6F1FB] text-[#0C447C] flex items-center justify-center font-bold text-sm shrink-0">
-                {mod.order}
+                {i + 1}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900">{mod.title}</p>

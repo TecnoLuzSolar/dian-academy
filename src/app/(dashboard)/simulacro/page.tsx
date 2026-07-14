@@ -1,14 +1,27 @@
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/db";
+import { getCargoModules } from "@/lib/cargos";
 import SimulacroQuiz from "./SimulacroQuiz";
 
 export const dynamic = "force-dynamic";
 
+// Banco de preguntas exclusivo del simulacro (no aparece en la ruta de módulos).
+// ⚠️ Verifica que el slug coincida con el de tu BD:
+//    SELECT slug FROM modules WHERE title LIKE 'Simulacro%';
+const SIMULACRO_BANK_SLUGS = ["simulacros-dian"];
+
 export default async function SimulacroPage() {
   const user = await getCurrentUser();
 
+  // Solo preguntas de los módulos del cargo del usuario + el banco del simulacro
+  const allowedSlugs = [...getCargoModules(user.cargo), ...SIMULACRO_BANK_SLUGS];
+
   const questions = await prisma.question.findMany({
-    where: { status: "PUBLISHED", type: "SITUATIONAL" },
+    where: {
+      status: "PUBLISHED",
+      type: "SITUATIONAL",
+      lesson: { module: { slug: { in: allowedSlugs } } },
+    },
     include: {
       options: true,
       lesson: { include: { module: true } },
