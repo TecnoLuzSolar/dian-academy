@@ -8,7 +8,11 @@ export const dynamic = "force-dynamic";
 export default async function ModulosPage() {
   const user = await getCurrentUser();
 
-  const allowedSlugs = getCargoModules(user.cargo);  
+  // Los ADMIN ven todos los módulos (para gestionar contenido de todos los perfiles);
+  // los usuarios solo ven los de su cargo.
+  const isAdmin = user.role === "ADMIN";
+  const allowedSlugs = isAdmin ? null : getCargoModules(user.cargo);
+
   const modules = await prisma.module.findMany({
     orderBy: { order: "asc" },
     include: { lessons: true },
@@ -31,6 +35,10 @@ export default async function ModulosPage() {
     return hasContent ? "active" : "locked";
   }
 
+  const visibleModules = modules.filter(
+    (mod) => !allowedSlugs || allowedSlugs.includes(mod.slug)
+  );
+
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
       <h1 className="text-2xl font-semibold text-gray-900 mb-1">Ruta de aprendizaje</h1>
@@ -38,8 +46,14 @@ export default async function ModulosPage() {
         Completa cada módulo con ≥70% para desbloquear el siguiente
       </p>
 
+      {isAdmin && (
+        <p className="text-xs bg-amber-50 text-amber-800 border border-amber-200 rounded-lg px-3 py-2 mb-4">
+          👑 Vista de administrador: estás viendo los módulos de TODOS los perfiles.
+        </p>
+      )}
+
       <div className="space-y-2">
-        {modules.filter((mod) => allowedSlugs.includes(mod.slug)).map((mod) => {
+        {visibleModules.map((mod) => {
           const status = getStatus(mod.order);
           const hasLessons = mod.lessons.length > 0;
           const isClickable = status !== "locked" && hasLessons;
