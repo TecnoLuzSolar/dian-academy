@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/db";
-import { notFound } from "next/navigation";
+import { canAccessModule } from "@/lib/access";
+import { notFound, redirect } from "next/navigation";
 import LessonQuiz from "./LessonQuiz";
 import GenerarBoton from "./GenerarBoton";
 
@@ -10,6 +11,11 @@ export default async function ModuloPage({
   params: { slug: string };
 }) {
   const user = await getCurrentUser();
+
+  // Trial: solo los módulos gratis; el resto redirige a suscripción
+  if (!canAccessModule(user, params.slug)) {
+    redirect("/suscripcion");
+  }
 
   const module = await prisma.module.findUnique({
     where: { slug: params.slug },

@@ -18,11 +18,13 @@ export default function DashboardShell({
   userName,
   userLevel,
   daysLeft,
+  isPremium = false,
   children,
 }: {
   userName: string;
   userLevel: number;
   daysLeft: number;
+  isPremium?: boolean;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -148,8 +150,8 @@ export default function DashboardShell({
 
       {/* Contenido principal */}
       <main className="flex-1 overflow-y-auto pt-14 md:pt-0">
-        {/* Aviso de prueba gratis: solo visible si el acceso vence pronto (oculta admins/pagos) */}
-        {daysLeft <= 30 && (
+        {/* Aviso de prueba gratis: solo para usuarios en trial (no premium/admin) */}
+        {!isPremium && daysLeft <= 30 && (
         <div
           className={`flex items-center justify-between gap-3 px-4 py-2.5 text-sm ${
             daysLeft <= 2

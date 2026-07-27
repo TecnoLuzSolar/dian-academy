@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { TRIAL_DAYS } from "@/lib/access";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
         email,
         passwordHash,
         cargo,
-        accessUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // prueba gratis de 7 días
+        accessUntil: new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000), // prueba gratis
         stats: {
           create: {
             xpTotal: 0,

@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/auth-helpers";
+import { hasActiveAccess, isPremiumUser } from "@/lib/access";
 import DashboardShell from "@/components/DashboardShell";
 import { redirect } from "next/navigation";
 
@@ -9,15 +10,13 @@ export default async function DashboardLayout({
 }) {
   const user = await getCurrentUser();
 
-  // Control de acceso: trial de 7 días / suscripción
-  const now = new Date();
-  const accessUntil = user.accessUntil ? new Date(user.accessUntil) : null;
-  const hasAccess = accessUntil ? now < accessUntil : false;
-
-  // Si el acceso expiró, lo mandamos a la pantalla de suscripción
-  if (!hasAccess) {
+  // Si el acceso por fecha expiró (trial o premium vencido), a la pantalla de pago
+  if (!hasActiveAccess(user)) {
     redirect("/suscripcion");
   }
+
+  const now = new Date();
+  const accessUntil = user.accessUntil ? new Date(user.accessUntil) : null;
 
   // Días restantes (redondeado hacia arriba) para mostrar el aviso
   const daysLeft = accessUntil
@@ -29,6 +28,7 @@ export default async function DashboardLayout({
       userName={user.name}
       userLevel={user.stats?.level ?? 1}
       daysLeft={daysLeft}
+      isPremium={isPremiumUser(user)}
     >
       {children}
     </DashboardShell>

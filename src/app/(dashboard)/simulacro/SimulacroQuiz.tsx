@@ -10,14 +10,33 @@ export default function SimulacroQuiz({
   userId,
   userName,
   cargoName,
+  isTrial = false,
 }: {
   questions: Question[];
   userId: string;
   userName: string;
   cargoName: string;
+  isTrial?: boolean;
 }) {
   const router = useRouter();
   const [started, setStarted] = useState(false);
+  const [starting, setStarting] = useState(false);
+
+  async function startExam() {
+    if (starting) return;
+    setStarting(true);
+    try {
+      // Marca el simulacro gratis del trial como usado (premium: no consume)
+      const res = await fetch("/api/simulacro/start", { method: "POST" });
+      if (!res.ok) {
+        router.push("/suscripcion");
+        return;
+      }
+      setStarted(true);
+    } finally {
+      setStarting(false);
+    }
+  }
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [correct, setCorrect] = useState(0);
@@ -74,11 +93,18 @@ export default function SimulacroQuiz({
             <p><span className="font-medium text-gray-900">Contenido:</span> Los módulos de tu ruta de aprendizaje</p>
           </div>
         </div>
+        {isTrial && (
+          <p className="text-xs bg-amber-50 text-amber-800 border border-amber-200 rounded-lg px-3 py-2 mb-4 max-w-md mx-auto">
+            🎁 Este es tu <strong>único simulacro gratis</strong>. Con el acceso
+            completo tendrás simulacros ilimitados.
+          </p>
+        )}
         <button
-          onClick={() => setStarted(true)}
-          className="bg-[#0C447C] text-white px-8 py-3 rounded-xl font-medium hover:bg-[#185FA5] transition-colors"
+          onClick={startExam}
+          disabled={starting}
+          className="bg-[#0C447C] text-white px-8 py-3 rounded-xl font-medium hover:bg-[#185FA5] transition-colors disabled:opacity-60"
         >
-          Iniciar simulacro
+          {starting ? "Preparando..." : "Iniciar simulacro"}
         </button>
       </div>
     );

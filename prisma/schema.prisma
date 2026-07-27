@@ -68,6 +68,8 @@ model User {
   role         Role     @default(STUDENT)
   cargo        String   @default("analista-1")
   accessUntil  DateTime?
+  isPremium    Boolean  @default(false)
+  trialSimulacroUsed Boolean @default(false)
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
   createdAt    DateTime @default(now())

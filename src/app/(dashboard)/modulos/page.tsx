@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/db";
 import { getCargoModules } from "@/lib/cargos";
+import { isPremiumUser, FREE_MODULE_SLUGS } from "@/lib/access";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ export default async function ModulosPage() {
   // Los ADMIN ven todos los módulos (para gestionar contenido de todos los perfiles);
   // los usuarios solo ven los de su cargo.
   const isAdmin = user.role === "ADMIN";
+  const premium = isPremiumUser(user);
   const allowedSlugs = isAdmin ? null : getCargoModules(user.cargo);
 
   const modules = await prisma.module.findMany({
@@ -23,21 +25,23 @@ export default async function ModulosPage() {
   });
 
   // Determina el estado de cada módulo
-  function getStatus(order: number): "completed" | "active" | "locked" {
-    const modProgress = progress.find(
-      (p) => modules.find((m) => m.id === p.moduleId)?.order === order
-    );
+  function getStatus(mod: (typeof modules)[number]): "completed" | "active" | "locked" | "premium" {
+    // Trial: módulos fuera de la lista gratis quedan bloqueados con candado premium
+    if (!premium && !FREE_MODULE_SLUGS.includes(mod.slug)) return "premium";
+
+    const modProgress = progress.find((p) => p.moduleId === mod.id);
     if (modProgress?.status === "COMPLETED") return "completed";
 
     // Si tiene contenido (lecciones), está disponible para estudiar
-    const mod = modules.find((m) => m.order === order);
-    const hasContent = (mod?.lessons?.length ?? 0) > 0;
+    const hasContent = (mod.lessons?.length ?? 0) > 0;
     return hasContent ? "active" : "locked";
   }
 
   const visibleModules = modules.filter(
     (mod) => !allowedSlugs || allowedSlugs.includes(mod.slug)
   );
+
+  const lockedCount = visibleModules.filter((m) => getStatus(m) === "premium").length;
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
@@ -52,17 +56,34 @@ export default async function ModulosPage() {
         </p>
       )}
 
+      {!premium && lockedCount > 0 && (
+        <div className="flex items-center justify-between gap-3 bg-[#E6F1FB] border border-[#C9E0F5] rounded-xl px-4 py-3 mb-4">
+          <p className="text-sm text-[#0C447C]">
+            <span className="font-semibold">{lockedCount} módulos bloqueados.</span>{" "}
+            Activa el acceso completo para estudiar toda tu ruta.
+          </p>
+          <Link
+            href="/suscripcion"
+            className="shrink-0 text-xs bg-[#0C447C] text-white px-3 py-1.5 rounded-lg font-medium hover:bg-[#185FA5] transition-colors"
+          >
+            Desbloquear
+          </Link>
+        </div>
+      )}
+
       <div className="space-y-2">
         {visibleModules.map((mod, i) => {
-          const status = getStatus(mod.order);
+          const status = getStatus(mod);
           const hasLessons = mod.lessons.length > 0;
-          const isClickable = status !== "locked" && hasLessons;
+          const isClickable = status === "premium" || (status !== "locked" && hasLessons);
 
           const card = (
             <div
               className={`flex items-center gap-3 p-4 rounded-xl border transition-colors ${
                 status === "locked"
                   ? "opacity-50 border-gray-200"
+                  : status === "premium"
+                  ? "border-gray-200 bg-white hover:border-[#0C447C] hover:bg-[#F5FAFF]"
                   : status === "completed"
                   ? "border-green-400 bg-white hover:bg-gray-50"
                   : "border-[#0C447C] border-2 bg-white hover:bg-gray-50"
@@ -74,16 +95,22 @@ export default async function ModulosPage() {
                     ? "bg-green-100 text-green-700"
                     : status === "active"
                     ? "bg-[#E6F1FB] text-[#0C447C]"
+                    : status === "premium"
+                    ? "bg-amber-50 text-amber-500"
                     : "bg-gray-100 text-gray-400"
                 }`}
               >
-                {status === "completed" ? "✓" : status === "locked" ? "🔒" : i + 1}
+                {status === "completed" ? "✓" : status === "locked" || status === "premium" ? "🔒" : i + 1}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900">{mod.title}</p>
+                <p className={`text-sm font-medium ${status === "premium" ? "text-gray-500" : "text-gray-900"}`}>
+                  {mod.title}
+                </p>
                 <p className="text-xs text-gray-500">
                   {status === "completed"
                     ? "Completado"
+                    : status === "premium"
+                    ? "Disponible con acceso completo"
                     : status === "locked"
                     ? "Bloqueado"
                     : hasLessons
@@ -96,8 +123,21 @@ export default async function ModulosPage() {
                   Empezar
                 </span>
               )}
+              {status === "premium" && (
+                <span className="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg font-medium">
+                  Premium
+                </span>
+              )}
             </div>
           );
+
+          if (status === "premium") {
+            return (
+              <Link key={mod.id} href="/suscripcion">
+                {card}
+              </Link>
+            );
+          }
 
           return isClickable ? (
             <Link key={mod.id} href={`/modulos/${mod.slug}`}>
